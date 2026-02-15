@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../config/api';
-import { generateInvoice } from '../utils/generateInvoice';
 
 const OrderTracking = () => {
     const { orderId } = useParams();
@@ -124,17 +123,9 @@ const OrderTracking = () => {
                 )}
             </div>
 
-            <div className="order-action-buttons">
-                <button
-                    onClick={() => generateInvoice({ order, items: order.items || [] })}
-                    className="btn btn-primary"
-                >
-                    📄 Download Invoice
-                </button>
-                <button onClick={() => navigate('/orders')} className="btn btn-secondary">
-                    Back to All Orders
-                </button>
-            </div>
+            <button onClick={() => navigate('/orders')} className="btn btn-secondary">
+                Back to All Orders
+            </button>
         </div>
     );
 };

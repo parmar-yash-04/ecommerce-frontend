@@ -713,6 +713,16 @@ body {
   margin: 0.5rem 0;
 }
 
+.order-details p {
+  margin: 0.5rem 0;
+}
+
+.order-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
 /* Order Tracking */
 .order-tracking-page {
   background: rgba(255, 255, 255, 0.95);

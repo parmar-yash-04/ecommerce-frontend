@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../config/api';
-import { generateInvoice } from '../utils/generateInvoice';
+import generateInvoice from '../utils/generateInvoice';
 
 const Orders = () => {
     const navigate = useNavigate();
@@ -40,6 +40,17 @@ const Orders = () => {
         return <div className="error">{error}</div>;
     }
 
+    const handleDownloadInvoice = (order) => {
+        console.log('Attempting to download invoice for order:', order);
+        try {
+            generateInvoice(order);
+            console.log('Invoice generation triggered');
+        } catch (error) {
+            console.error('Invoice generation failed:', error);
+            alert('Failed to generate invoice: ' + error.message);
+        }
+    };
+
     return (
         <div className="orders-page">
             <h1>My Orders</h1>
@@ -68,18 +79,19 @@ const Orders = () => {
                                 <p><strong>Items:</strong> {order.items?.length || 0}</p>
                             </div>
 
-                            <div className="order-action-buttons">
-                                <button
-                                    onClick={() => generateInvoice({ order, items: order.items || [] })}
-                                    className="btn btn-primary"
-                                >
-                                    📄 Invoice
-                                </button>
+                            <div className="order-actions">
                                 <button
                                     onClick={() => viewOrderDetails(order.order_id)}
                                     className="btn btn-secondary"
                                 >
-                                    View Details & Track
+                                    View Details
+                                </button>
+                                <button
+                                    onClick={() => handleDownloadInvoice(order)}
+                                    className="btn btn-primary"
+                                    style={{ marginLeft: '10px' }}
+                                >
+                                    Download Invoice
                                 </button>
                             </div>
                         </div>

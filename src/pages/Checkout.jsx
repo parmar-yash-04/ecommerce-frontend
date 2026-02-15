@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../config/api';
+import generateInvoice from '../utils/generateInvoice';
 
 const Checkout = () => {
     const navigate = useNavigate();
@@ -110,10 +111,25 @@ const Checkout = () => {
                 shipping_address: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`
             });
 
-            setMessage('Order placed successfully!');
+            // Generate Invoice (Frontend)
+            try {
+                // Ensure we pass full items data even if backend response is minimal
+                const orderData = {
+                    ...response.data,
+                    items: response.data.items || cartItems,
+                    shipping_address: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`,
+                    created_at: new Date().toISOString()
+                };
+                generateInvoice(orderData);
+                console.log('Invoice generated automatically');
+            } catch (err) {
+                console.error('Invoice generation failed:', err);
+            }
+
+            setMessage('Order placed successfully! Downloading invoice...');
             setTimeout(() => {
                 navigate(`/order/${response.data.order_id}`);
-            }, 1500);
+            }, 2000);
         } catch (error) {
             setMessage(error.response?.data?.detail || 'Failed to place order');
         } finally {

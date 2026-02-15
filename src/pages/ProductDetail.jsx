@@ -162,6 +162,26 @@ const ProductDetail = () => {
         return <div className="error">Product not found</div>;
     }
 
+    const getValidImageUrl = (variant, product) => {
+        const variantImage = variant?.image_url;
+        const productImage = product?.image_url;
+        const fallbackImage = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80';
+
+        // Check if variant image is a valid URL string (not a color name like "Titanium Silver")
+        if (variantImage && (variantImage.startsWith('http') || variantImage.startsWith('/'))) {
+            return variantImage;
+        }
+
+        // Fallback to product image if valid
+        if (productImage && (productImage.startsWith('http') || productImage.startsWith('/'))) {
+            return productImage;
+        }
+
+        return fallbackImage;
+    };
+
+    const imageUrl = getValidImageUrl(selectedVariant, product);
+
     return (
         <div className="product-detail-page">
             {message && <div className={`message ${message.includes('Failed') || message.includes('Error') || message.includes('failed') || message.includes('error') || message.includes('invalid') || message.includes('Invalid') ? 'error' : 'success'}`}>{message}</div>}
@@ -171,10 +191,10 @@ const ProductDetail = () => {
             <div className="product-detail-container">
                 <div className="product-image-large">
                     <img
-                        src={selectedVariant?.image_url || product.image_url || 'https://via.placeholder.com/500x500?text=No+Image'}
+                        src={imageUrl}
                         alt={product.model_name}
                         onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/500x500?text=No+Image';
+                            e.target.src = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80';
                         }}
                     />
                 </div>
