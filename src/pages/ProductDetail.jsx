@@ -82,7 +82,8 @@ const ProductDetail = () => {
                     ram: selectedVariant?.ram,
                     storage: selectedVariant?.storage,
                     quantity: quantity,
-                    price: selectedVariant?.price || product.base_price
+                    price: selectedVariant?.price || product.base_price,
+                    image_url: imageUrl
                 });
                 localStorage.setItem('guestCart', JSON.stringify(guestCart));
                 setMessage('Added to cart!');
