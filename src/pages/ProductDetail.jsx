@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import apiClient from '../config/api';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { isAuthenticated } = useContext(AuthContext);
 
     const [product, setProduct] = useState(null);
@@ -181,14 +182,12 @@ const ProductDetail = () => {
     const getValidImageUrl = (variant, product) => {
         const variantImage = variant?.image_url;
         const productImage = product?.image_url;
-        const fallbackImage = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80';
+        const fallbackImage = 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=600&q=80';
 
-        // Check if variant image is a valid URL string (not a color name like "Titanium Silver")
         if (variantImage && (variantImage.startsWith('http') || variantImage.startsWith('/'))) {
             return variantImage;
         }
 
-        // Fallback to product image if valid
         if (productImage && (productImage.startsWith('http') || productImage.startsWith('/'))) {
             return productImage;
         }
@@ -213,6 +212,7 @@ const ProductDetail = () => {
 
     return (
         <div className="product-detail-page">
+            <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
             {message && (
                 <div className={`message ${message.includes('Failed') || message.includes('Error') || message.includes('failed') || message.includes('error') || message.includes('invalid') || message.includes('Invalid') ? 'error' : 'success'}`}>
                     {message}
@@ -231,14 +231,17 @@ const ProductDetail = () => {
                             src={imageUrl}
                             alt={product.model_name}
                             onError={(e) => {
-                                e.target.src = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80';
+                                e.target.src = 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=600&q=80';
                             }}
                         />
                     </div>
                 </div>
 
                 <div className="product-details">
-                    <span className="product-brand">{product.brand}</span>
+                    <div className="product-meta">
+                        <span className="product-brand">Brand: {product.brand}</span>
+                        {product.category && <span className="product-category">Category: {product.category}</span>}
+                    </div>
                     <h1>{product.model_name}</h1>
                     
                     <div className="product-price-section">

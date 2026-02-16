@@ -122,10 +122,10 @@ const Home = () => {
                             <div key={product.product_id} className="product-card">
                                 <div className="product-image">
                                     <img
-                                        src={product.image_url || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80'}
+                                        src={product.image_url || 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=400&q=80'}
                                         alt={product.model_name}
                                         onError={(e) => {
-                                            e.target.src = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80';
+                                            e.target.src = 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=400&q=80';
                                         }}
                                     />
                                 </div>

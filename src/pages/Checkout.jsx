@@ -147,7 +147,7 @@ const Checkout = () => {
         <div className="checkout-page">
             <h1>Checkout</h1>
 
-            {message && <div className="message error">{message}</div>}
+            {message && <div className={`message ${message.includes('Failed') || message.includes('failed') || message.includes('Error') || message.includes('error') || message.includes('Invalid') || message.includes('invalid') ? 'error' : 'success'}`}>{message}</div>}
 
             {/* OTP Popup */}
             {showOtpPopup && (
@@ -282,7 +282,8 @@ const Checkout = () => {
                         ))}
                     </div>
                     <div className="order-total">
-                        <h3>Total: ₹{calculateTotal()}</h3>
+                        <span>Total</span>
+                        <span>₹{calculateTotal()}</span>
                     </div>
 
                     {step === 3 && (

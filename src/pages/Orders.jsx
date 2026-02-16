@@ -53,7 +53,10 @@ const Orders = () => {
 
     return (
         <div className="orders-page">
-            <h1>My Orders</h1>
+            <div className="page-header">
+                <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+                <h1>My Orders</h1>
+            </div>
 
             {orders.length === 0 ? (
                 <div className="empty-state">

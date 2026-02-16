@@ -64,7 +64,10 @@ const Wishlist = () => {
 
     return (
         <div className="wishlist-page">
-            <h1>My Wishlist</h1>
+            <div className="page-header">
+                <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+                <h1>My Wishlist</h1>
+            </div>
 
             {message && <div className="message">{message}</div>}
 

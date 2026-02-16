@@ -160,6 +160,16 @@
     cursor: not-allowed;
 }
 
+.qty-btn.delete-btn {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.qty-btn.delete-btn:hover {
+    background: #feb2b2;
+    color: #9b2c2c;
+}
+
 .qty-input {
     width: 40px;
     text-align: center;

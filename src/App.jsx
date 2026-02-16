@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
@@ -29,6 +30,7 @@ function App() {
               <Route path="/order/:orderId" element={<OrderTracking />} />
             </Routes>
           </main>
+          <Footer />
         </div>
       </Router>
     </AuthProvider>

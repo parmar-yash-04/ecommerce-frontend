@@ -71,7 +71,10 @@ const OrderTracking = () => {
 
     return (
         <div className="order-tracking-page">
-            <h1>Order Tracking</h1>
+            <div className="page-header">
+                <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+                <h1>Order Tracking</h1>
+            </div>
 
             <div className="order-info-card">
                 <h2>Order #{order.order_number}</h2>

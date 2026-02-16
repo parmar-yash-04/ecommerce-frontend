@@ -105,6 +105,7 @@ const Cart = () => {
     return (
         <div className="cart-page-custom">
             <header className="cart-header">
+                <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
                 <h1 className="cart-title">Shopping Cart</h1>
                 <span className="cart-count-badge">{cartItems.length} Items</span>
             </header>
@@ -132,11 +133,11 @@ const Cart = () => {
                                     <div key={itemUniqueKey} className="cart-item-card">
                                         <div className="item-image-container">
                                             <img
-                                                src={item.image_url || item.variant?.image_url || item.product?.image_url || "https://placehold.co/150x150?text=Product"}
+                                                src={item.image_url || item.variant?.image_url || item.product?.image_url || "https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=200&q=80"}
                                                 alt={item.model_name || "Product"}
                                                 className="item-image"
                                                 onError={(e) => {
-                                                    e.target.src = 'https://placehold.co/150x150?text=Product';
+                                                    e.target.src = 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=200&q=80';
                                                 }}
                                             />
                                         </div>
@@ -157,27 +158,36 @@ const Cart = () => {
                                             </div>
 
                                             <div className="item-controls">
-                                                <div className="quantity-control">
-                                                    <button
-                                                        className="qty-btn"
-                                                        onClick={() => updateQuantity(itemId, (item.quantity || 1) - 1)}
-                                                        disabled={(item.quantity || 1) <= 1}
-                                                    >
-                                                        -
-                                                    </button>
-                                                    <input
-                                                        type="text"
-                                                        readOnly
-                                                        value={item.quantity || 1}
-                                                        className="qty-input"
-                                                    />
-                                                    <button
-                                                        className="qty-btn"
-                                                        onClick={() => updateQuantity(itemId, (item.quantity || 1) + 1)}
-                                                    >
-                                                        +
-                                                    </button>
-                                                </div>
+                                            <div className="quantity-control">
+                                                        {(item.quantity || 1) === 1 ? (
+                                                            <button
+                                                                className="qty-btn delete-btn"
+                                                                onClick={() => removeItem(itemId)}
+                                                                title="Remove item"
+                                                            >
+                                                                🗑
+                                                            </button>
+                                                        ) : (
+                                                            <button
+                                                                className="qty-btn"
+                                                                onClick={() => updateQuantity(itemId, (item.quantity || 1) - 1)}
+                                                            >
+                                                                -
+                                                            </button>
+                                                        )}
+                                                        <input
+                                                            type="text"
+                                                            readOnly
+                                                            value={item.quantity || 1}
+                                                            className="qty-input"
+                                                        />
+                                                        <button
+                                                            className="qty-btn"
+                                                            onClick={() => updateQuantity(itemId, (item.quantity || 1) + 1)}
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
 
                                                 <div className="item-actions">
                                                     <button className="action-btn save-later">
