@@ -16,8 +16,6 @@ const OrderTracking = () => {
     const fetchOrderDetails = async () => {
         try {
             setLoading(true);
-            // GET /orders/{order_id}
-            // Returns: OrderResponse { order_id, order_number, total_amount, order_status, created_at, items: [...] }
             const response = await apiClient.get(`/orders/${orderId}`);
             setOrder(response.data);
         } catch (err) {
@@ -84,7 +82,6 @@ const OrderTracking = () => {
                 <p><strong>Status:</strong> {order.order_status}</p>
             </div>
 
-            {/* Tracking Timeline */}
             <div className="tracking-timeline">
                 <h2>Order Status</h2>
                 <div className="timeline">
@@ -103,7 +100,6 @@ const OrderTracking = () => {
                 </div>
             </div>
 
-            {/* Order Items */}
             <div className="order-items-section">
                 <h2>Order Items</h2>
                 {order.items && order.items.length > 0 ? (

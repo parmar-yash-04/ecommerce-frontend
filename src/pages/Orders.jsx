@@ -16,8 +16,6 @@ const Orders = () => {
     const fetchOrders = async () => {
         try {
             setLoading(true);
-            // Backend returns: List[OrderResponse]
-            // OrderResponse: { order_id, order_number, total_amount, order_status, created_at, items: [...] }
             const response = await apiClient.get('/orders/my');
             setOrders(response.data);
         } catch (err) {

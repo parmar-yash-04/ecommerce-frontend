@@ -9,7 +9,6 @@ const Navbar = () => {
     const [wishlistCount, setWishlistCount] = useState(0);
 
     useEffect(() => {
-        // Fetch cart and wishlist counts
         const fetchCounts = async () => {
             try {
                 if (isAuthenticated) {
@@ -17,11 +16,9 @@ const Navbar = () => {
                         apiClient.get('/cart/'),
                         apiClient.get('/wishlist/')
                     ]);
-                    // Backend returns { cart_id, items: [...] } and { wishlist_id, items: [...] }
                     setCartCount(cartRes.data.items?.length || 0);
                     setWishlistCount(wishlistRes.data.items?.length || 0);
                 } else {
-                    // Get from localStorage for guest users
                     const cart = JSON.parse(localStorage.getItem('guestCart') || '[]');
                     const wishlist = JSON.parse(localStorage.getItem('guestWishlist') || '[]');
                     setCartCount(cart.length);
@@ -29,7 +26,6 @@ const Navbar = () => {
                 }
             } catch (error) {
                 console.error('Error fetching counts:', error);
-                // Fallback to localStorage
                 const cart = JSON.parse(localStorage.getItem('guestCart') || '[]');
                 const wishlist = JSON.parse(localStorage.getItem('guestWishlist') || '[]');
                 setCartCount(cart.length);
@@ -39,7 +35,6 @@ const Navbar = () => {
 
         fetchCounts();
 
-        // Set up interval to refresh counts
         const interval = setInterval(fetchCounts, 5000);
         return () => clearInterval(interval);
     }, [isAuthenticated]);

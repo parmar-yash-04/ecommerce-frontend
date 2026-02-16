@@ -1,4 +1,3 @@
-// Sample phone products matching backend schema structure
 export const sampleProducts = [
     {
         product_id: 1,
@@ -110,7 +109,6 @@ export const sampleProducts = [
     }
 ];
 
-// Sample variants for demo mode
 export const sampleVariants = {
     1: [
         { variant_id: 1, product_id: 1, color: "Black", ram: "12GB", storage: "256GB", price: 1299.99, stock_qty: 10, sku_code: "SAM-S24U-BLK-256", image_url: "https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=500&q=80" },

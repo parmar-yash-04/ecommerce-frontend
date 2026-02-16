@@ -5,7 +5,7 @@ import generateInvoice from '../utils/generateInvoice';
 
 const Checkout = () => {
     const navigate = useNavigate();
-    const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: Address
+    const [step, setStep] = useState(1);
     const [cartItems, setCartItems] = useState([]);
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
@@ -22,7 +22,6 @@ const Checkout = () => {
 
     useEffect(() => {
         fetchCart();
-        // Auto-fill email if user is logged in
         const userData = localStorage.getItem('user');
         if (userData) {
             const user = JSON.parse(userData);
@@ -48,8 +47,6 @@ const Checkout = () => {
 
         setLoading(true);
         try {
-            // POST /otp/send expects: { email }
-            // Backend returns: { message, otp }
             const response = await apiClient.post('/otp/send', { email });
             const otpCode = response.data.otp;
             setMessage(`OTP sent to your email! Your OTP is: ${otpCode}`);
@@ -67,13 +64,11 @@ const Checkout = () => {
             return;
         }
 
-        // Validate OTP format - must be exactly 6 digits
         if (!/^\d{6}$/.test(otp)) {
             setMessage('OTP must be exactly 6 digits');
             return;
         }
 
-        // Verify OTP with backend to ensure it's correct
         setLoading(true);
         try {
             await apiClient.post('/otp/verify', { email, otp });
@@ -103,17 +98,13 @@ const Checkout = () => {
 
         setLoading(true);
         try {
-            // POST /checkout/place-order expects: { email, otp, shipping_address }
-            // Backend returns: OrderResponse with order_id, order_number, etc.
             const response = await apiClient.post('/checkout/place-order', {
                 email,
                 otp,
                 shipping_address: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`
             });
 
-            // Generate Invoice (Frontend)
             try {
-                // Ensure we pass full items data even if backend response is minimal
                 const orderData = {
                     ...response.data,
                     items: response.data.items || cartItems,
@@ -149,7 +140,6 @@ const Checkout = () => {
 
             {message && <div className={`message ${message.includes('Failed') || message.includes('failed') || message.includes('Error') || message.includes('error') || message.includes('Invalid') || message.includes('invalid') ? 'error' : 'success'}`}>{message}</div>}
 
-            {/* OTP Popup */}
             {showOtpPopup && (
                 <div className="popup-overlay">
                     <div className="popup">
@@ -175,7 +165,6 @@ const Checkout = () => {
             )}
 
             <div className="checkout-container">
-                {/* Step 1: Email */}
                 {step >= 1 && (
                     <div className="checkout-section">
                         <h2>1. Email {step > 1 && '✓'}</h2>
@@ -198,7 +187,6 @@ const Checkout = () => {
                     </div>
                 )}
 
-                {/* Step 3: Address */}
                 {step >= 3 && (
                     <div className="checkout-section">
                         <h2>2. Shipping Address</h2>
@@ -270,7 +258,6 @@ const Checkout = () => {
                     </div>
                 )}
 
-                {/* Order Summary */}
                 <div className="checkout-section">
                     <h2>Order Summary</h2>
                     <div className="order-items">

@@ -24,15 +24,12 @@ const ProductDetail = () => {
     const fetchProductDetails = async () => {
         try {
             setLoading(true);
-            // Backend endpoint /products/{id}/variants returns ProductWithVariants
-            // which contains both product details AND variants in one response
             const response = await apiClient.get(`/products/${id}/variants`);
 
             console.log('Backend ProductWithVariants response:', response.data);
 
-            // Extract product and variants from the response
-            setProduct(response.data);  // The product is the main object
-            setVariants(response.data.variants || []);  // Variants are nested
+            setProduct(response.data);
+            setVariants(response.data.variants || []);
 
             if (response.data.variants && response.data.variants.length > 0) {
                 console.log('Setting selected variant to:', response.data.variants[0]);
@@ -53,7 +50,6 @@ const ProductDetail = () => {
     const addToCart = async () => {
         try {
             if (isAuthenticated) {
-                // Validate that we have a variant selected
                 if (!selectedVariant || !selectedVariant.variant_id) {
                     setMessage('Please select a product variant first');
                     setTimeout(() => setMessage(''), 3000);
@@ -66,7 +62,6 @@ const ProductDetail = () => {
                     selectedVariant: selectedVariant
                 });
 
-                // Backend expects: { variant_id, quantity }
                 const response = await apiClient.post('/cart/add', {
                     variant_id: selectedVariant.variant_id,
                     quantity: quantity
@@ -74,7 +69,6 @@ const ProductDetail = () => {
                 console.log('Cart add response:', response.data);
                 setMessage('Added to cart!');
             } else {
-                // Guest cart - store with all needed info
                 const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
                 guestCart.push({
                     variant_id: selectedVariant?.variant_id,
@@ -93,7 +87,6 @@ const ProductDetail = () => {
             }
             setTimeout(() => setMessage(''), 3000);
         } catch (error) {
-            // Show actual backend error for debugging
             const errorDetail = error.response?.data?.detail;
             let errorMessage = 'Failed to add to cart';
 
@@ -118,8 +111,6 @@ const ProductDetail = () => {
     const addToWishlist = async () => {
         try {
             if (isAuthenticated) {
-                // Backend expects: { product_id }
-                // Use id from URL since product object might not have product_id
                 await apiClient.post('/wishlist/add', {
                     product_id: parseInt(id)
                 });
@@ -198,7 +189,7 @@ const ProductDetail = () => {
     const imageUrl = getValidImageUrl(selectedVariant, product);
 
     const uniqueColors = [...new Set(variants.map(v => v.color))];
-    const filteredVariants = selectedColor 
+    const filteredVariants = selectedColor
         ? variants.filter(v => v.color === selectedColor)
         : variants;
 
@@ -243,7 +234,7 @@ const ProductDetail = () => {
                         {product.category && <span className="product-category">Category: {product.category}</span>}
                     </div>
                     <h1>{product.model_name}</h1>
-                    
+
                     <div className="product-price-section">
                         <span className="current-price">₹{(selectedVariant?.price || product.base_price).toLocaleString()}</span>
                     </div>
@@ -288,7 +279,7 @@ const ProductDetail = () => {
                     <div className="quantity-section">
                         <label>Quantity</label>
                         <div className="quantity-controls">
-                            <button 
+                            <button
                                 className="quantity-btn"
                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                             >−</button>
@@ -300,7 +291,7 @@ const ProductDetail = () => {
                                 onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                                 className="quantity-input"
                             />
-                            <button 
+                            <button
                                 className="quantity-btn"
                                 onClick={() => setQuantity(Math.min(selectedVariant?.stock_qty || 99, quantity + 1))}
                             >+</button>

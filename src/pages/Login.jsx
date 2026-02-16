@@ -17,7 +17,6 @@ const Login = () => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Get redirect path from query params
     const searchParams = new URLSearchParams(location.search);
     const redirect = searchParams.get('redirect') || '/';
 
@@ -34,10 +33,8 @@ const Login = () => {
         setMessage('');
 
         try {
-            // Backend uses OAuth2PasswordRequestForm which expects 'username' and 'password' fields
-            // Even though we're using email, OAuth2 standard requires the field name to be 'username'
             const loginData = new URLSearchParams();
-            loginData.append('username', formData.email); // OAuth2 uses 'username' field for email
+            loginData.append('username', formData.email);
             loginData.append('password', formData.password);
 
             const response = await apiClient.post('/auth/login', loginData, {
@@ -48,7 +45,6 @@ const Login = () => {
 
             const { access_token, token_type } = response.data;
 
-            // Store user data (email) since /users/me endpoint may not exist
             const userData = {
                 email: formData.email,
                 username: formData.email.split('@')[0]
@@ -56,34 +52,27 @@ const Login = () => {
 
             login(access_token, userData);
 
-            // Merge guest cart and wishlist with user's account
             await mergeGuestData(access_token);
 
             setMessage('Login successful!');
 
-            // Redirect after a short delay
             setTimeout(() => {
-                // Fix redirect path handling
                 if (redirect && redirect !== '/') {
-                    // If redirect doesn't start with '/', add it
                     const redirectPath = redirect.startsWith('/') ? redirect : `/${redirect}`;
                     console.log('Redirecting to:', redirectPath);
                     navigate(redirectPath);
                 } else {
-                    // Default to home page
                     console.log('Redirecting to home');
                     navigate('/');
                 }
             }, 500);
         } catch (error) {
-            // Handle validation errors from FastAPI/Pydantic
             const errorDetail = error.response?.data?.detail;
             let errorMessage = 'Login failed. Please check your credentials.';
 
             if (typeof errorDetail === 'string') {
                 errorMessage = errorDetail;
             } else if (Array.isArray(errorDetail)) {
-                // Pydantic validation errors are arrays of objects with {loc, msg, type}
                 errorMessage = errorDetail.map(err => {
                     const field = err.loc ? err.loc[err.loc.length - 1] : 'Field';
                     const msg = err.msg || 'is required';
@@ -105,7 +94,6 @@ const Login = () => {
         setMessage('');
 
         try {
-            // Backend expects: { username, email, phone_number, password }
             const response = await apiClient.post('/users/create', {
                 username: formData.username || formData.email.split('@')[0],
                 email: formData.email,
@@ -117,14 +105,12 @@ const Login = () => {
             setIsLogin(true);
             setFormData({ email: formData.email, password: '', username: '', phone_number: '' });
         } catch (error) {
-            // Handle validation errors from FastAPI/Pydantic
             const errorDetail = error.response?.data?.detail;
             let errorMessage = 'Signup failed. Please try again.';
 
             if (typeof errorDetail === 'string') {
                 errorMessage = errorDetail;
             } else if (Array.isArray(errorDetail)) {
-                // Pydantic validation errors are arrays of objects with {loc, msg, type}
                 errorMessage = errorDetail.map(err => {
                     const field = err.loc ? err.loc[err.loc.length - 1] : 'Field';
                     const msg = err.msg || 'is required';
@@ -141,7 +127,6 @@ const Login = () => {
     };
 
     const mergeGuestData = async (token) => {
-        // Merge guest cart
         const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
         for (const item of guestCart) {
             try {
@@ -157,7 +142,6 @@ const Login = () => {
         }
         localStorage.removeItem('guestCart');
 
-        // Merge guest wishlist
         const guestWishlist = JSON.parse(localStorage.getItem('guestWishlist') || '[]');
         for (const item of guestWishlist) {
             try {

@@ -88,8 +88,7 @@ const Cart = () => {
     };
 
     const subtotal = calculateSubtotal();
-    const shipping = 0; // Free shipping
-    // Tax removed as per requirement
+    const shipping = 0;
     const totalAmount = subtotal + shipping;
 
     const proceedToCheckout = () => {
@@ -113,7 +112,6 @@ const Cart = () => {
             {message && <div className={`message ${message.includes('Failed') ? 'error' : 'success'}`}>{message}</div>}
 
             <div className="cart-grid">
-                {/* Left Column */}
                 <div className="cart-left-column">
                     {cartItems.length === 0 ? (
                         <div className="empty-state">
@@ -158,36 +156,36 @@ const Cart = () => {
                                             </div>
 
                                             <div className="item-controls">
-                                            <div className="quantity-control">
-                                                        {(item.quantity || 1) === 1 ? (
-                                                            <button
-                                                                className="qty-btn delete-btn"
-                                                                onClick={() => removeItem(itemId)}
-                                                                title="Remove item"
-                                                            >
-                                                                🗑
-                                                            </button>
-                                                        ) : (
-                                                            <button
-                                                                className="qty-btn"
-                                                                onClick={() => updateQuantity(itemId, (item.quantity || 1) - 1)}
-                                                            >
-                                                                -
-                                                            </button>
-                                                        )}
-                                                        <input
-                                                            type="text"
-                                                            readOnly
-                                                            value={item.quantity || 1}
-                                                            className="qty-input"
-                                                        />
+                                                <div className="quantity-control">
+                                                    {(item.quantity || 1) === 1 ? (
+                                                        <button
+                                                            className="qty-btn delete-btn"
+                                                            onClick={() => removeItem(itemId)}
+                                                            title="Remove item"
+                                                        >
+                                                            🗑
+                                                        </button>
+                                                    ) : (
                                                         <button
                                                             className="qty-btn"
-                                                            onClick={() => updateQuantity(itemId, (item.quantity || 1) + 1)}
+                                                            onClick={() => updateQuantity(itemId, (item.quantity || 1) - 1)}
                                                         >
-                                                            +
+                                                            -
                                                         </button>
-                                                    </div>
+                                                    )}
+                                                    <input
+                                                        type="text"
+                                                        readOnly
+                                                        value={item.quantity || 1}
+                                                        className="qty-input"
+                                                    />
+                                                    <button
+                                                        className="qty-btn"
+                                                        onClick={() => updateQuantity(itemId, (item.quantity || 1) + 1)}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
 
                                                 <div className="item-actions">
                                                     <button className="action-btn save-later">
@@ -222,7 +220,6 @@ const Cart = () => {
                             <span>Shipping</span>
                             <span style={{ color: '#2ecc71' }}>Free</span>
                         </div>
-                        {/* Tax row removed */}
 
                         <div className="summary-row total">
                             <span>Total Amount</span>
