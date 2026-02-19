@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../config/api';
-import generateInvoice from '../utils/generateInvoice';
 
 const Checkout = () => {
     const navigate = useNavigate();
@@ -32,7 +31,6 @@ const Checkout = () => {
     const fetchCart = async () => {
         try {
             const response = await apiClient.get('/cart/');
-            console.log('Cart response:', response.data);
             setCartItems(response.data.items || []);
         } catch (error) {
             console.error('Error fetching cart:', error);
@@ -47,9 +45,8 @@ const Checkout = () => {
 
         setLoading(true);
         try {
-            const response = await apiClient.post('/otp/send', { email });
-            const otpCode = response.data.otp;
-            setMessage(`OTP sent to your email! Your OTP is: ${otpCode}`);
+            await apiClient.post('/otp/send', { email });
+            setMessage('OTP sent to your email! Please check your inbox.');
             setShowOtpPopup(true);
         } catch (error) {
             setMessage(error.response?.data?.detail || 'Failed to send OTP');
@@ -98,31 +95,35 @@ const Checkout = () => {
 
         setLoading(true);
         try {
-            const response = await apiClient.post('/checkout/place-order', {
-                email,
-                otp,
-                shipping_address: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`
-            });
+            const orderPayload = {
+                email: email,
+                otp: otp,
+                shipping_address: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country || 'India'}`
+            };
 
-            try {
-                const orderData = {
-                    ...response.data,
-                    items: response.data.items || cartItems,
-                    shipping_address: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`,
-                    created_at: new Date().toISOString()
-                };
-                generateInvoice(orderData);
-                console.log('Invoice generated automatically');
-            } catch (err) {
-                console.error('Invoice generation failed:', err);
+            const response = await apiClient.post('/checkout/place-order', orderPayload);
+            const data = response.data;
+            const orderId = data.order?.order_id || data.order?.id || data.order_id;
+
+            setMessage('Order placed successfully! Redirecting...');
+            setTimeout(() => navigate(orderId ? `/order/${orderId}` : '/orders'), 1500);
+        } catch (error) {
+            console.error('Order error:', error.response?.data);
+
+            const errorDetail = error.response?.data?.detail;
+            let errorMessage = 'Failed to place order';
+            
+            if (typeof errorDetail === 'string') {
+                errorMessage = errorDetail;
+            } else if (Array.isArray(errorDetail)) {
+                errorMessage = errorDetail.map(err => {
+                    const field = err.loc ? err.loc[err.loc.length - 1] : 'Field';
+                    const msg = err.msg || 'Invalid value';
+                    return `${field}: ${msg}`;
+                }).join(', ');
             }
 
-            setMessage('Order placed successfully! Downloading invoice...');
-            setTimeout(() => {
-                navigate(`/order/${response.data.order_id}`);
-            }, 2000);
-        } catch (error) {
-            setMessage(error.response?.data?.detail || 'Failed to place order');
+            setMessage(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -138,7 +139,11 @@ const Checkout = () => {
         <div className="checkout-page">
             <h1>Checkout</h1>
 
-            {message && <div className={`message ${message.includes('Failed') || message.includes('failed') || message.includes('Error') || message.includes('error') || message.includes('Invalid') || message.includes('invalid') ? 'error' : 'success'}`}>{message}</div>}
+            {message && (
+                <div className={`message ${message.includes('Failed') || message.includes('failed') || message.includes('Error') || message.includes('error') || message.includes('Invalid') || message.includes('invalid') ? 'error' : 'success'}`}>
+                    {message}
+                </div>
+            )}
 
             {showOtpPopup && (
                 <div className="popup-overlay">
@@ -148,9 +153,10 @@ const Checkout = () => {
                         <input
                             type="text"
                             value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
+                            onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                             placeholder="Enter 6-digit OTP"
                             className="form-input"
+                            maxLength={6}
                         />
                         <div className="popup-buttons">
                             <button onClick={handleVerifyOTP} className="btn btn-primary" disabled={loading}>

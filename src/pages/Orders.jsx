@@ -30,6 +30,15 @@ const Orders = () => {
         navigate(`/order/${orderId}`);
     };
 
+    const handleDownloadInvoice = (order) => {
+        try {
+            generateInvoice(order);
+        } catch (error) {
+            console.error('Invoice generation failed:', error);
+            alert('Failed to generate invoice: ' + error.message);
+        }
+    };
+
     if (loading) {
         return <div className="loading">Loading orders...</div>;
     }
@@ -37,17 +46,6 @@ const Orders = () => {
     if (error) {
         return <div className="error">{error}</div>;
     }
-
-    const handleDownloadInvoice = (order) => {
-        console.log('Attempting to download invoice for order:', order);
-        try {
-            generateInvoice(order);
-            console.log('Invoice generation triggered');
-        } catch (error) {
-            console.error('Invoice generation failed:', error);
-            alert('Failed to generate invoice: ' + error.message);
-        }
-    };
 
     return (
         <div className="orders-page">
@@ -75,7 +73,7 @@ const Orders = () => {
                             </div>
 
                             <div className="order-details">
-                                <p><strong>Date:</strong> {new Date(order.created_at).toLocaleString()}</p>
+                                <p><strong>Date:</strong> {new Date(order.created_at).toLocaleDateString('en-IN')}</p>
                                 <p><strong>Total:</strong> ₹{order.total_amount.toFixed(2)}</p>
                                 <p><strong>Items:</strong> {order.items?.length || 0}</p>
                             </div>

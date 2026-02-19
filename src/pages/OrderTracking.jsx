@@ -77,7 +77,7 @@ const OrderTracking = () => {
             <div className="order-info-card">
                 <h2>Order #{order.order_number}</h2>
                 <p><strong>Order ID:</strong> {order.order_id}</p>
-                <p><strong>Order Date:</strong> {new Date(order.created_at).toLocaleString()}</p>
+                <p><strong>Order Date:</strong> {new Date(order.created_at).toLocaleDateString('en-IN')}</p>
                 <p><strong>Total Amount:</strong> ₹{order.total_amount.toFixed(2)}</p>
                 <p><strong>Status:</strong> {order.order_status}</p>
             </div>

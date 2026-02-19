@@ -1,5 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import { AuthContext } from '../context/AuthContext';
 import apiClient from '../config/api';
 import './ProductDetail.css';
@@ -218,9 +220,10 @@ const ProductDetail = () => {
                         )}
                     </div>
                     <div className="product-image-large">
-                        <img
+                        <LazyLoadImage
                             src={imageUrl}
                             alt={product.model_name}
+                            effect="blur"
                             onError={(e) => {
                                 e.target.src = 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=600&q=80';
                             }}

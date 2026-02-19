@@ -1,5 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import { AuthContext } from '../context/AuthContext';
 import apiClient from '../config/api';
 import './Cart.css';
@@ -130,9 +132,10 @@ const Cart = () => {
                                 return (
                                     <div key={itemUniqueKey} className="cart-item-card">
                                         <div className="item-image-container">
-                                            <img
+                                            <LazyLoadImage
                                                 src={item.image_url || item.variant?.image_url || item.product?.image_url || "https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=200&q=80"}
                                                 alt={item.model_name || "Product"}
+                                                effect="blur"
                                                 className="item-image"
                                                 onError={(e) => {
                                                     e.target.src = 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=200&q=80';
