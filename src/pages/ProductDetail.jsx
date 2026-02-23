@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { AuthContext } from '../context/AuthContext';
-import apiClient from '../config/api';
+import apiClient, { recentlyViewedApi } from '../config/api';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
@@ -21,6 +21,22 @@ const ProductDetail = () => {
 
     useEffect(() => {
         fetchProductDetails();
+        
+        const addToRecentlyViewed = async () => {
+            const token = localStorage.getItem('token');
+            const productId = parseInt(id);
+            console.log('AddToRecent - Token:', !!token, 'ProductID:', productId);
+            if (token && productId) {
+                try {
+                    const result = await recentlyViewedApi.add(productId);
+                    console.log('AddToRecent - Success:', result.data);
+                } catch (err) {
+                    console.error('AddToRecent - Error:', err);
+                }
+            }
+        };
+        
+        addToRecentlyViewed();
     }, [id]);
 
     const fetchProductDetails = async () => {

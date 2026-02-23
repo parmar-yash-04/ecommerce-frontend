@@ -33,4 +33,9 @@ apiClient.interceptors.response.use(
     }
 );
 
+export const recentlyViewedApi = {
+    add: (productId) => apiClient.post(`/recently-viewed/add/${productId}`),
+    get: () => apiClient.get('/recently-viewed/')
+};
+
 export default apiClient;

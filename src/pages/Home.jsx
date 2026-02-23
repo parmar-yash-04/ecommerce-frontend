@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import apiClient from '../config/api';
+import apiClient, { recentlyViewedApi } from '../config/api';
 import './Home.css';
 
 const Home = () => {
@@ -11,14 +11,15 @@ const Home = () => {
     const [error, setError] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [priceSort, setPriceSort] = useState('default');
-    
+    const [recentlyViewed, setRecentlyViewed] = useState([]);
+
     const [page, setPage] = useState(1);
     const pageSize = 10;
 
     const filteredProducts = useMemo(() => {
         let filtered = [...allProducts];
         if (selectedCategory !== 'all') {
-            filtered = filtered.filter(product => 
+            filtered = filtered.filter(product =>
                 product.brand?.toLowerCase() === selectedCategory.toLowerCase()
             );
         }
@@ -54,6 +55,36 @@ const Home = () => {
     useEffect(() => {
         fetchProducts();
     }, []);
+
+    useEffect(() => {
+        const fetchRecentlyViewed = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const response = await recentlyViewedApi.get();
+                const recentData = response.data;
+
+                if (!recentData || !Array.isArray(recentData) || recentData.length === 0) return;
+
+                const recentProductIds = [...new Set(recentData.map(item => item.product_id))];
+
+                if (recentProductIds.length > 0) {
+                    const recentProducts = allProducts
+                        .filter(p => recentProductIds.includes(p.product_id) || recentProductIds.includes(Number(p.product_id)))
+                        .slice(0, 5);
+
+                    setRecentlyViewed(recentProducts);
+                }
+            } catch (err) {
+                console.error('RecentlyViewed - Error:', err);
+            }
+        };
+
+        if (allProducts.length > 0) {
+            fetchRecentlyViewed();
+        }
+    }, [allProducts]);
 
     useEffect(() => {
         if (page > totalPages && totalPages > 0) {
@@ -97,15 +128,42 @@ const Home = () => {
                 <p className="page-subtitle">Find your perfect smartphone</p>
             </div>
 
+            {recentlyViewed.length > 0 && (
+                <div className="recently-viewed-section">
+                    <h2 className="section-title">Recently Viewed</h2>
+                    <div className="recently-viewed-grid">
+                        {recentlyViewed.map((product) => (
+                            <Link to={`/product/${product.product_id}`} key={product.product_id} className="recently-viewed-card">
+                                <div className="recently-viewed-image">
+                                    <LazyLoadImage
+                                        src={product.image_url || 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=400&q=80'}
+                                        alt={product.model_name}
+                                        effect="blur"
+                                        onError={(e) => {
+                                            e.target.src = 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=400&q=80';
+                                        }}
+                                    />
+                                </div>
+                                <div className="recently-viewed-info">
+                                    <p className="recently-viewed-brand">{product.brand}</p>
+                                    <h4 className="recently-viewed-name">{product.model_name}</h4>
+                                    <span className="recently-viewed-price">₹{product.base_price?.toLocaleString()}</span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="home-container">
                 <aside className="sidebar">
                     <div className="filter-panel">
                         <h3>Filters</h3>
-                        
+
                         <div className="filter-section">
                             <label>Category</label>
-                            <select 
-                                value={selectedCategory} 
+                            <select
+                                value={selectedCategory}
                                 onChange={(e) => {
                                     setSelectedCategory(e.target.value);
                                     setPage(1);
@@ -121,8 +179,8 @@ const Home = () => {
 
                         <div className="filter-section">
                             <label>Sort by Price</label>
-                            <select 
-                                value={priceSort} 
+                            <select
+                                value={priceSort}
                                 onChange={(e) => {
                                     setPriceSort(e.target.value);
                                     setPage(1);
@@ -194,14 +252,14 @@ const Home = () => {
 
                     {totalPages > 1 && (
                         <div className="pagination">
-                            <button 
+                            <button
                                 className="pagination-btn"
                                 onClick={() => handlePageChange(page - 1)}
                                 disabled={page === 1}
                             >
                                 Previous
                             </button>
-                            
+
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
                                 <button
                                     key={pageNum}
@@ -211,8 +269,8 @@ const Home = () => {
                                     {pageNum}
                                 </button>
                             ))}
-                            
-                            <button 
+
+                            <button
                                 className="pagination-btn"
                                 onClick={() => handlePageChange(page + 1)}
                                 disabled={page === totalPages}
