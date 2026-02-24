@@ -12,12 +12,16 @@ const Home = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [priceSort, setPriceSort] = useState('default');
     const [recentlyViewed, setRecentlyViewed] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [selectedTag, setSelectedTag] = useState('');
+    const [tagFilteredProducts, setTagFilteredProducts] = useState(null);
 
     const [page, setPage] = useState(1);
     const pageSize = 10;
 
     const filteredProducts = useMemo(() => {
-        let filtered = [...allProducts];
+        let filtered = tagFilteredProducts !== null ? [...tagFilteredProducts] : [...allProducts];
+        
         if (selectedCategory !== 'all') {
             filtered = filtered.filter(product =>
                 product.brand?.toLowerCase() === selectedCategory.toLowerCase()
@@ -29,7 +33,7 @@ const Home = () => {
             filtered.sort((a, b) => b.base_price - a.base_price);
         }
         return filtered;
-    }, [allProducts, selectedCategory, priceSort]);
+    }, [allProducts, tagFilteredProducts, selectedCategory, priceSort]);
 
     const totalPages = Math.ceil(filteredProducts.length / pageSize);
 
@@ -41,6 +45,7 @@ const Home = () => {
             const response = await apiClient.get('/products/', {
                 params: { page: 1, size: 50 }
             });
+            console.log('Products response:', response.data);
             setAllProducts(response.data.data);
             setError(null);
         } catch (err) {
@@ -54,6 +59,120 @@ const Home = () => {
 
     useEffect(() => {
         fetchProducts();
+        fetchTags();
+    }, []);
+
+    const fetchTags = async () => {
+        try {
+            const response = await apiClient.get('/tags/tags');
+            console.log('Tags response:', response.data);
+            setTags(response.data || []);
+        } catch (err) {
+            console.error('Failed to fetch tags:', err);
+        }
+    };
+
+    const fetchProductsByTags = async (tagId) => {
+        try {
+            setLoading(true);
+            const tagIdNum = parseInt(tagId, 10);
+            console.log('Filtering products for tag:', tagIdNum);
+            
+            const response = await apiClient.get(`/tags/tags/${tagIdNum}/products`);
+            console.log('Tag products response:', response.data);
+            
+            let products = response.data;
+            
+            if (products && typeof products === 'object' && !Array.isArray(products)) {
+                if (products.data) products = products.data;
+                else if (products.products) products = products.products;
+                else if (products.items) products = products.items;
+            }
+            
+            if (products && products.tag_id) {
+                const selectedTag = tags.find(t => t.tag_id === tagIdNum);
+                console.log('Tag found:', selectedTag);
+                
+                const tagName = selectedTag?.name?.toLowerCase();
+                
+                const filtered = allProducts.filter(product => {
+                    const productBrand = product.brand?.toLowerCase() || '';
+                    const productName = product.model_name?.toLowerCase() || '';
+                    
+                    if (tagName === 'apple') return productBrand === 'apple';
+                    if (tagName === 'samsung') return productBrand === 'samsung';
+                    if (tagName === 'ram') return productName.includes('ram') || productName.includes('gb');
+                    
+                    return productBrand === tagName;
+                });
+                
+                console.log('Filtered products from local:', filtered);
+                setTagFilteredProducts(filtered);
+                setError(null);
+                setPage(1);
+                setLoading(false);
+                return;
+            }
+            
+            if (!Array.isArray(products)) {
+                setTagFilteredProducts([]);
+                setError(null);
+                setLoading(false);
+                return;
+            }
+            
+            const uniqueProducts = [];
+            const seenIds = new Set();
+            products.forEach(product => {
+                const pid = product.product_id || product.id;
+                if (!seenIds.has(pid)) {
+                    seenIds.add(pid);
+                    uniqueProducts.push(product);
+                }
+            });
+            
+            setTagFilteredProducts(uniqueProducts);
+            setError(null);
+            setPage(1);
+        } catch (err) {
+            console.error('Failed to fetch products by tags:', err);
+            
+            const tagIdNum = parseInt(tagId, 10);
+            const selectedTag = tags.find(t => t.tag_id === tagIdNum);
+            const tagName = selectedTag?.name?.toLowerCase();
+            
+            const filtered = allProducts.filter(product => {
+                const productBrand = product.brand?.toLowerCase() || '';
+                const productName = product.model_name?.toLowerCase() || '';
+                
+                if (tagName === 'apple') return productBrand === 'apple';
+                if (tagName === 'samsung') return productBrand === 'samsung';
+                if (tagName === 'ram') return productName.includes('ram') || productName.includes('gb');
+                
+                return productBrand === tagName;
+            });
+            
+            console.log('Filtered products from local (fallback):', filtered);
+            setTagFilteredProducts(filtered);
+            setError(null);
+            setPage(1);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleTagChange = (tagId) => {
+        setSelectedTag(tagId);
+        if (tagId === '') {
+            setTagFilteredProducts(null);
+        } else {
+            fetchProductsByTags(tagId);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+        fetchTags();
     }, []);
 
     useEffect(() => {
@@ -102,6 +221,8 @@ const Home = () => {
     const clearFilters = () => {
         setSelectedCategory('all');
         setPriceSort('default');
+        setSelectedTag('');
+        setTagFilteredProducts(null);
         setPage(1);
     };
 
@@ -192,7 +313,25 @@ const Home = () => {
                             </select>
                         </div>
 
-                        {(selectedCategory !== 'all' || priceSort !== 'default') && (
+                        <div className="filter-section">
+                            <label>Tags</label>
+                            <select
+                                value={selectedTag}
+                                onChange={(e) => {
+                                    handleTagChange(e.target.value);
+                                    setPage(1);
+                                }}
+                            >
+                                <option value="">All Tags</option>
+                                {tags.map(tag => (
+                                    <option key={tag.tag_id} value={tag.tag_id}>
+                                        {tag.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {(selectedCategory !== 'all' || priceSort !== 'default' || selectedTag !== '') && (
                             <button className="clear-filters-btn" onClick={clearFilters}>
                                 Clear Filters
                             </button>

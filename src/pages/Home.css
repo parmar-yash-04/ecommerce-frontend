@@ -98,7 +98,34 @@
 .filter-section select:focus {
     outline: none;
     border-color: #16213e;
-    box-shadow: 0 0 0 3px rgba(22, 33, 62, 0.1);
+}
+
+.tags-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.tag-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.tag-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #16213e;
+}
+
+.tag-checkbox span {
+    user-select: none;
 }
 
 .clear-filters-btn {
