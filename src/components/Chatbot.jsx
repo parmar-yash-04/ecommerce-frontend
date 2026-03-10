@@ -57,13 +57,13 @@ const Chatbot = () => {
     ];
 
     return (
-        <>
-            <button className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)}>
+        <div className="chatbot-wrapper" style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 999999, pointerEvents: 'none' }}>
+            <button className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)} style={{ pointerEvents: 'auto' }}>
                 {isOpen ? '✕' : '💬'}
             </button>
 
             {isOpen && (
-                <div className="chatbot-container">
+                <div className="chatbot-container" style={{ pointerEvents: 'auto' }}>
                     <div className="chatbot-header">
                         <h3>🛒 Shop Assistant</h3>
                         <button className="chatbot-close" onClick={() => setIsOpen(false)}>✕</button>
@@ -115,7 +115,7 @@ const Chatbot = () => {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 
