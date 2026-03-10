@@ -1,0 +1,122 @@
+import { useState, useEffect, useRef } from 'react';
+import apiClient from '../config/api';
+import './Chatbot.css';
+
+const Chatbot = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [messages, setMessages] = useState([
+        { type: 'bot', text: 'Hi! I\'m your shopping assistant. Ask me about phones, recommend products under budget, or help you find the best deals!' }
+    ]);
+    const [input, setInput] = useState('');
+    const [loading, setLoading] = useState(false);
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
+
+    const sendMessage = async () => {
+        if (!input.trim() || loading) return;
+
+        const userMessage = input.trim();
+        setInput('');
+        setMessages(prev => [...prev, { type: 'user', text: userMessage }]);
+        setLoading(true);
+
+        try {
+            const response = await apiClient.post('/api/chatbot/chat', {
+                message: userMessage
+            });
+
+            const { answer } = response.data;
+            setMessages(prev => [...prev, { type: 'bot', text: answer }]);
+
+        } catch (error) {
+            console.error('Chat error:', error);
+            setMessages(prev => [...prev, { 
+                type: 'bot', 
+                text: 'Sorry, I\'m having trouble answering right now. Please try again!' 
+            }]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    };
+
+    const suggestedQuestions = [
+        'Best phones under 20000',
+        'Samsung phones under 30000',
+        'Best camera phones',
+        'OnePlus phones under 50000'
+    ];
+
+    return (
+        <>
+            <button className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)}>
+                {isOpen ? '✕' : '💬'}
+            </button>
+
+            {isOpen && (
+                <div className="chatbot-container">
+                    <div className="chatbot-header">
+                        <h3>🛒 Shop Assistant</h3>
+                        <button className="chatbot-close" onClick={() => setIsOpen(false)}>✕</button>
+                    </div>
+
+                    <div className="chatbot-messages">
+                        {messages.map((msg, index) => (
+                            <div key={index} className={`message ${msg.type}`}>
+                                <div className="message-text">{msg.text}</div>
+                            </div>
+                        ))}
+
+                        {loading && (
+                            <div className="message bot">
+                                <div className="message-text typing">Thinking...</div>
+                            </div>
+                        )}
+                        <div ref={messagesEndRef} />
+                    </div>
+
+                    {!messages.some(m => m.type === 'user') && (
+                        <div className="suggested-questions">
+                            {suggestedQuestions.map((q, i) => (
+                                <button 
+                                    key={i} 
+                                    className="suggested-btn"
+                                    onClick={() => {
+                                        setInput(q);
+                                    }}
+                                >
+                                    {q}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    <div className="chatbot-input">
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            placeholder="Ask about products..."
+                            disabled={loading}
+                        />
+                        <button onClick={sendMessage} disabled={loading || !input.trim()}>
+                            Send
+                        </button>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
+
+export default Chatbot;
