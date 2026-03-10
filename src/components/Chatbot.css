@@ -36,7 +36,9 @@
     bottom: 90px !important;
     right: 20px !important;
     width: 380px !important;
+    max-width: calc(100vw - 40px) !important;
     height: 520px !important;
+    max-height: calc(100vh - 120px) !important;
     background: white !important;
     border-radius: 15px !important;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
@@ -83,6 +85,7 @@
 }
 
 .chatbot-messages {
+    height: 300px;
     flex: 1 !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
@@ -93,16 +96,19 @@
     min-height: 0 !important;
     box-sizing: border-box !important;
     width: 100% !important;
+    scroll-behavior: smooth !important;
 }
 
 .message {
-    max-width: 90% !important;
+    max-width: 85% !important;
+    width: fit-content !important;
     padding: 10px 14px !important;
     border-radius: 12px !important;
     font-size: 14px !important;
     line-height: 1.4 !important;
-    word-wrap: break-word !important;
+    word-break: break-word !important;
     overflow-wrap: break-word !important;
+    box-sizing: border-box !important;
 }
 
 .message.user {
@@ -120,9 +126,11 @@
 }
 
 .message-text {
-    white-space: pre-wrap !important;
-    word-wrap: break-word !important;
+    white-space: normal !important;
+    word-break: break-word !important;
     overflow-wrap: break-word !important;
+    max-width: 100% !important;
+    display: inline-block !important;
 }
 
 .message.bot.typing {

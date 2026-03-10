@@ -28,7 +28,9 @@ const Chatbot = () => {
                 message: userMessage
             });
 
-            const { answer } = response.data;
+            let { answer } = response.data;
+            answer = answer.replace(/\[VIEW_PRODUCT:\d+\]/g, "");
+            answer = answer.replace(/<[^>]*>?/gm, "");
             setMessages(prev => [...prev, { type: 'bot', text: answer }]);
 
         } catch (error) {
@@ -72,16 +74,16 @@ const Chatbot = () => {
                     <div className="chatbot-messages">
                         {messages.map((msg, index) => (
                             <div key={index} className={`message ${msg.type}`}>
-                                <div className="message-text">{msg.text}</div>
+                                <span className="message-text">{msg.text}</span>
                             </div>
                         ))}
 
                         {loading && (
                             <div className="message bot">
-                                <div className="message-text typing">Thinking...</div>
+                                <span className="message-text typing">Thinking...</span>
                             </div>
                         )}
-                        <div ref={messagesEndRef} />
+                        <div ref={messagesEndRef} style={{ float: "left", clear: "both" }} />
                     </div>
 
                     {!messages.some(m => m.type === 'user') && (
