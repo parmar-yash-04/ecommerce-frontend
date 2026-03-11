@@ -3,11 +3,11 @@ import { createPortal } from 'react-dom';
 import apiClient from '../config/api';
 import './Chatbot.css';
 
+const INITIAL_MESSAGE = { type: 'bot', text: "Hi! I'm your shopping assistant. Ask me about phones, recommend products under budget, or help you find the best deals!" };
+
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState([
-        { type: 'bot', text: 'Hi! I\'m your shopping assistant. Ask me about phones, recommend products under budget, or help you find the best deals!' }
-    ]);
+    const [messages, setMessages] = useState([INITIAL_MESSAGE]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef(null);
@@ -15,6 +15,11 @@ const Chatbot = () => {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+
+    const resetChat = () => {
+        setMessages([INITIAL_MESSAGE]);
+        setInput('');
+    };
 
     const sendMessage = async () => {
         if (!input.trim() || loading) return;
@@ -38,7 +43,7 @@ const Chatbot = () => {
             console.error('Chat error:', error);
             setMessages(prev => [...prev, { 
                 type: 'bot', 
-                text: 'Sorry, I\'m having trouble answering right now. Please try again!' 
+                text: "Sorry, I'm having trouble answering right now. Please try again!" 
             }]);
         } finally {
             setLoading(false);
@@ -69,7 +74,10 @@ const Chatbot = () => {
                 <div className="chatbot-container" style={{ pointerEvents: 'auto' }}>
                     <div className="chatbot-header">
                         <h3>🛒 Shop Assistant</h3>
-                        <button className="chatbot-close" onClick={() => setIsOpen(false)}>✕</button>
+                        <div className="chatbot-header-actions">
+                            <button className="chatbot-reset" onClick={resetChat} title="Reset chat">↺</button>
+                            <button className="chatbot-close" onClick={() => setIsOpen(false)}>✕</button>
+                        </div>
                     </div>
 
                     <div className="chatbot-messages">
@@ -93,9 +101,7 @@ const Chatbot = () => {
                                 <button 
                                     key={i} 
                                     className="suggested-btn"
-                                    onClick={() => {
-                                        setInput(q);
-                                    }}
+                                    onClick={() => setInput(q)}
                                 >
                                     {q}
                                 </button>

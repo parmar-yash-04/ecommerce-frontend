@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
+/* ── Variables ─────────────────────────────────────────── */
 :root {
     --cb-accent:       #0ea5e9;
     --cb-accent-dark:  #0369a1;
@@ -96,6 +97,36 @@
     font-weight: 600 !important;
 }
 
+.chatbot-header-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.chatbot-reset {
+    background: none !important;
+    border: 1px solid var(--cb-border) !important;
+    color: var(--cb-text-muted) !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s ease !important;
+}
+
+.chatbot-reset:hover {
+    background: var(--cb-surface2) !important;
+    color: var(--cb-accent) !important;
+    border-color: var(--cb-accent) !important;
+    transform: rotate(-30deg) !important;
+}
+
 .chatbot-close {
     background: none !important;
     border: none !important;
@@ -125,6 +156,7 @@
     scroll-behavior: smooth !important;
     position: relative !important;
     background: var(--cb-bg) !important;
+    /* FIX: nice thin scrollbar */
     scrollbar-width: thin !important;
     scrollbar-color: var(--cb-surface2) transparent !important;
 }
@@ -141,12 +173,14 @@
 }
 
 .message {
+    /* FIX: full width for bot, auto for user */
     max-width: 88% !important;
     width: fit-content !important;
     padding: 10px 14px !important;
     border-radius: 12px !important;
     font-size: 14px !important;
     line-height: 1.5 !important;
+    /* FIX: proper word wrapping, no mid-word breaks */
     word-break: normal !important;
     overflow-wrap: anywhere !important;
     hyphens: none !important;
