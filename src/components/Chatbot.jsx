@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import apiClient from '../config/api';
 import './Chatbot.css';
 
@@ -58,7 +59,7 @@ const Chatbot = () => {
         'OnePlus phones under 50000'
     ];
 
-    return (
+    return createPortal(
         <div className="chatbot-wrapper" style={{ position: 'fixed', bottom: 0, right: 0, zIndex: 999999, pointerEvents: 'none' }}>
             <button className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)} style={{ pointerEvents: 'auto' }}>
                 {isOpen ? '✕' : '💬'}
@@ -83,7 +84,7 @@ const Chatbot = () => {
                                 <span className="message-text typing">Thinking...</span>
                             </div>
                         )}
-                        <div ref={messagesEndRef} style={{ float: "left", clear: "both" }} />
+                        <div ref={messagesEndRef} />
                     </div>
 
                     {!messages.some(m => m.type === 'user') && (
@@ -117,7 +118,8 @@ const Chatbot = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </div>,
+        document.body
     );
 };
 

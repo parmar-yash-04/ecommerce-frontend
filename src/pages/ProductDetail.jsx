@@ -235,16 +235,37 @@ const ProductDetail = () => {
                             <span className="badge badge-out-of-stock">Out of Stock</span>
                         )}
                     </div>
-                    <div className="product-image-large">
-                        <LazyLoadImage
-                            src={imageUrl}
-                            alt={product.model_name}
-                            effect="blur"
-                            onError={(e) => {
-                                e.target.src = 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=600&q=80';
-                            }}
-                        />
-                    </div>
+                        <div className="product-image-large">
+                            <LazyLoadImage
+                                src={imageUrl}
+                                alt={product.model_name}
+                                effect="blur"
+                                width="100%"
+                                height="100%"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'contain',
+                                    objectPosition: 'center',
+                                    padding: '20px',
+                                    boxSizing: 'border-box',
+                                    display: 'block',
+                                    transition: 'transform 0.3s ease',
+                                }}
+                                wrapperProps={{
+                                    style: {
+                                        width: '100%',
+                                        height: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }
+                                }}
+                                onError={(e) => {
+                                    e.target.src = 'https://plus.unsplash.com/premium_photo-1675716443562-b771d72a3da9?w=600&q=80';
+                                }}
+                            />
+                        </div>
                 </div>
 
                 <div className="product-details">
