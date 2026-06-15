@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import apiClient from '../config/api';
+import apiClient, { API_BASE_URL } from '../config/api';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -163,7 +163,6 @@ const Login = () => {
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
-            const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
             const response = await fetch(`${API_BASE_URL}/auth/google`);
             const data = await response.json();
             window.location.href = data.authorization_url || data.url;

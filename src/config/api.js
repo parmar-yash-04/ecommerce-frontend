@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://ecommerce-api-da4o.onrender.com';
+export const API_BASE_URL = (import.meta.env.VITE_API_URL || 'https://ecommerce-api-da4o.onrender.com').replace(/\/$/, '');
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,

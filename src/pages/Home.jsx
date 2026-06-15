@@ -51,7 +51,7 @@ const Home = () => {
         } catch (err) {
             console.error('Failed to fetch products from backend:', err);
             setAllProducts([]);
-            setError('Failed to load products. Please ensure the backend is running.');
+            setError('Failed to load products. Please check that the backend is awake and allows this frontend URL in CORS.');
         } finally {
             setLoading(false);
         }
