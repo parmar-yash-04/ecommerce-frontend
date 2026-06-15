@@ -101,7 +101,24 @@ const Chatbot = () => {
                                 <button 
                                     key={i} 
                                     className="suggested-btn"
-                                    onClick={() => setInput(q)}
+                                    onClick={() => {
+                                        setInput(q);
+                                        setMessages(prev => [...prev, { type: 'user', text: q }]);
+                                        apiClient.post('/api/chatbot/chat', { message: q })
+                                            .then(response => {
+                                                let answer = response.data.answer;
+                                                answer = answer.replace(/\[VIEW_PRODUCT:\d+\]/g, "");
+                                                answer = answer.replace(/<[^>]*>?/gm, "");
+                                                setMessages(prev => [...prev, { type: 'bot', text: answer }]);
+                                            })
+                                            .catch(error => {
+                                                console.error('Chat error:', error);
+                                                setMessages(prev => [...prev, { 
+                                                    type: 'bot', 
+                                                    text: "Sorry, I'm having trouble answering right now. Please try again!" 
+                                                }]);
+                                            });
+                                    }}
                                 >
                                     {q}
                                 </button>
