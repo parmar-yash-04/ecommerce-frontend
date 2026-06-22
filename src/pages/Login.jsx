@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import apiClient, { API_BASE_URL } from '../config/api';
 
@@ -336,6 +336,7 @@ const Login = () => {
                                     required
                                     placeholder="Enter your password"
                                 />
+                                <Link to="/forgot-password" className="forgot-link">Forgot Password?</Link>
                             </div>
 
                             <button type="submit" className="btn btn-primary" disabled={loading}>

@@ -612,8 +612,26 @@ body {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.form-group input:disabled {
+  background: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
 .form-group input::placeholder {
   color: #9ca3af;
+}
+
+.forgot-link {
+  font-size: 0.85rem;
+  color: #667eea;
+  text-decoration: none;
+  align-self: flex-end;
+  margin-top: -0.25rem;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
 }
 
 .auth-divider {
