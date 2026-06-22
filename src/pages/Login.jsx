@@ -19,6 +19,7 @@ const Login = () => {
     const [otp, setOtp] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(false);
 
     const searchParams = new URLSearchParams(location.search);
     const redirect = searchParams.get('redirect') || '/';
@@ -101,7 +102,8 @@ const Login = () => {
                 username: formData.username || formData.email.split('@')[0],
                 email: formData.email,
                 phone_number: formData.phone_number,
-                password: formData.password
+                password: formData.password,
+                terms_accepted: termsAccepted
             });
 
             setMessage('Account created successfully! Please login.');
@@ -339,6 +341,18 @@ const Login = () => {
                                 <Link to="/forgot-password" className="forgot-link">Forgot Password?</Link>
                             </div>
 
+                            <div className="form-group terms-group">
+                                <label className="terms-label">
+                                    <input
+                                        type="checkbox"
+                                        checked={termsAccepted}
+                                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                                        required
+                                    />
+                                    <span>I agree to the <a href="/terms" target="_blank">Terms & Conditions</a></span>
+                                </label>
+                            </div>
+
                             <button type="submit" className="btn btn-primary" disabled={loading}>
                                 {loading ? 'Please wait...' : 'Sign In'}
                             </button>
@@ -395,6 +409,18 @@ const Login = () => {
                             />
                         </div>
 
+                        <div className="form-group terms-group">
+                            <label className="terms-label">
+                                <input
+                                    type="checkbox"
+                                    checked={termsAccepted}
+                                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                                    required
+                                />
+                                <span>I accept the <a href="/terms" target="_blank">Terms & Conditions</a></span>
+                            </label>
+                        </div>
+
                         <button type="submit" className="btn btn-primary" disabled={loading}>
                             {loading ? 'Please wait...' : 'Create Account'}
                         </button>
@@ -403,7 +429,7 @@ const Login = () => {
 
                 <p className="auth-toggle">
                     {isLogin ? "Don't have an account? " : 'Already have an account? '}
-                    <button onClick={() => { setIsLogin(!isLogin); setMessage(''); }} className="link-btn">
+                    <button onClick={() => { setIsLogin(!isLogin); setMessage(''); setTermsAccepted(false); }} className="link-btn">
                         {isLogin ? 'Sign Up' : 'Sign In'}
                     </button>
                 </p>

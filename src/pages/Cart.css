@@ -431,3 +431,135 @@
     padding-top: 2rem;
     border-top: 1px solid #e2e8f0;
 }
+
+/* ===========================
+   CART: MOBILE RESPONSIVE
+   =========================== */
+@media (max-width: 768px) {
+    .cart-page-custom {
+        padding: 1rem;
+    }
+
+    .cart-header {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .cart-title {
+        font-size: 1.4rem;
+    }
+
+    .cart-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .cart-item-card {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .item-image-container {
+        width: 100%;
+        height: 160px;
+        border-radius: 10px;
+    }
+
+    .item-image {
+        max-width: 60%;
+        max-height: 90%;
+    }
+
+    .item-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .item-name {
+        font-size: 1rem;
+    }
+
+    .item-price {
+        font-size: 1.1rem;
+    }
+
+    .item-controls {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .quantity-control {
+        align-self: stretch;
+        justify-content: center;
+    }
+
+    .qty-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .item-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .order-summary-card {
+        position: static;
+        border-radius: 12px;
+    }
+
+    .summary-title {
+        font-size: 1.1rem;
+    }
+
+    .total-amount {
+        font-size: 1.4rem;
+    }
+
+    .btn-checkout {
+        font-size: 1rem;
+        padding: 0.85rem;
+    }
+
+    .recommendations-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recommendation-card {
+        padding: 0.75rem;
+    }
+
+    .coupon-input-group {
+        flex-direction: column;
+    }
+
+    .btn-apply {
+        padding: 0.75rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .cart-page-custom {
+        padding: 0.75rem;
+    }
+
+    .cart-title {
+        font-size: 1.2rem;
+    }
+
+    .cart-item-card {
+        padding: 0.75rem;
+    }
+
+    .item-image-container {
+        height: 130px;
+    }
+
+    .order-summary-card {
+        padding: 1.25rem;
+    }
+}
