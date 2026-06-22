@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import apiClient, { recentlyViewedApi } from '../config/api';
 import './Home.css';
 
 const Home = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const searchQuery = searchParams.get('search') || '';
     const [allProducts, setAllProducts] = useState([]);
+    const [searchResults, setSearchResults] = useState(null);
+    const [searchLoading, setSearchLoading] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState('all');
@@ -19,21 +23,28 @@ const Home = () => {
     const [page, setPage] = useState(1);
     const pageSize = 10;
 
+    const clearSearch = useCallback(() => {
+        setSearchParams({});
+        setSearchResults(null);
+    }, [setSearchParams]);
+
+    const sourceProducts = searchResults !== null ? searchResults : allProducts;
+
     const filteredProducts = useMemo(() => {
-        let filtered = tagFilteredProducts !== null ? [...tagFilteredProducts] : [...allProducts];
-        
+        let filtered = tagFilteredProducts !== null ? [...tagFilteredProducts] : [...sourceProducts];
+
         if (selectedCategory !== 'all') {
             filtered = filtered.filter(product =>
                 product.brand?.toLowerCase() === selectedCategory.toLowerCase()
             );
         }
         if (priceSort === 'low') {
-            filtered.sort((a, b) => a.base_price - b.base_price);
+            filtered.sort((a, b) => (a.base_price || a.price) - (b.base_price || b.price));
         } else if (priceSort === 'high') {
-            filtered.sort((a, b) => b.base_price - a.base_price);
+            filtered.sort((a, b) => (b.base_price || b.price) - (a.base_price || a.price));
         }
         return filtered;
-    }, [allProducts, tagFilteredProducts, selectedCategory, priceSort]);
+    }, [sourceProducts, tagFilteredProducts, selectedCategory, priceSort]);
 
     const totalPages = Math.ceil(filteredProducts.length / pageSize);
 
@@ -61,6 +72,30 @@ const Home = () => {
         fetchProducts();
         fetchTags();
     }, []);
+
+    const fetchSearchResults = useCallback(async (query) => {
+        setSearchLoading(true);
+        try {
+            const res = await apiClient.get('/products/search', {
+                params: { q: query, page: 1, size: 50 }
+            });
+            setSearchResults(res.data.data || []);
+            setPage(1);
+        } catch (err) {
+            console.error('Search results error:', err);
+            setSearchResults([]);
+        } finally {
+            setSearchLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (searchQuery) {
+            fetchSearchResults(searchQuery);
+        } else {
+            setSearchResults(null);
+        }
+    }, [searchQuery, fetchSearchResults]);
 
     const fetchTags = async () => {
         try {
@@ -231,12 +266,12 @@ const Home = () => {
     const startItem = total > 0 ? (page - 1) * pageSize + 1 : 0;
     const endItem = Math.min(page * pageSize, total);
 
-    if (loading) {
+    if (loading || (searchQuery && searchLoading)) {
         return (
             <div className="home-page">
                 <div className="loading">
                     <div className="loading-spinner"></div>
-                    <p>Loading products...</p>
+                    <p>{searchQuery ? 'Searching...' : 'Loading products...'}</p>
                 </div>
             </div>
         );
@@ -245,11 +280,20 @@ const Home = () => {
     return (
         <div className="home-page">
             <div className="page-header">
-                <h1 className="page-title">All Phones</h1>
-                <p className="page-subtitle">Find your perfect smartphone</p>
+                <h1 className="page-title">{searchQuery ? 'Search Results' : 'All Phones'}</h1>
+                <p className="page-subtitle">{searchQuery ? `Showing results for "${searchQuery}"` : 'Find your perfect smartphone'}</p>
             </div>
 
-            {recentlyViewed.length > 0 && (
+            {searchQuery && (
+                <div className="search-results-header">
+                    <h2>Search results for: "{searchQuery}"</h2>
+                    <button className="clear-filters-btn" onClick={clearSearch}>
+                        Clear Search
+                    </button>
+                </div>
+            )}
+
+            {!searchQuery && recentlyViewed.length > 0 && (
                 <div className="recently-viewed-section">
                     <h2 className="section-title">Recently Viewed</h2>
                     <div className="recently-viewed-grid">
@@ -371,7 +415,7 @@ const Home = () => {
                                     <h3 className="product-name">{product.model_name}</h3>
                                     <p className="product-description">{product.description}</p>
                                     <div className="product-price-row">
-                                        <span className="product-price">₹{product.base_price.toLocaleString()}</span>
+                                        <span className="product-price">₹{(product.price || product.base_price).toLocaleString()}</span>
                                     </div>
 
                                     <Link to={`/product/${product.product_id}`} className="add-to-cart-btn">
@@ -382,10 +426,10 @@ const Home = () => {
                         ))}
                     </div>
 
-                    {(allProducts.length === 0 || filteredProducts.length === 0) && (
+                    {(sourceProducts.length === 0 || filteredProducts.length === 0) && (
                         <div className="empty-state">
                             <h3>No products found</h3>
-                            <p>Try adjusting your filters to find what you're looking for.</p>
+                            <p>{searchQuery ? 'Try a different search term.' : 'Try adjusting your filters to find what you\'re looking for.'}</p>
                         </div>
                     )}
 
