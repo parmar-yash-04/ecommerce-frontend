@@ -455,6 +455,123 @@
     color: white;
 }
 
+/* ===== Recently Viewed Section ===== */
+.recently-viewed-section {
+    margin: 0 30px;
+    padding: 24px 28px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title::before {
+
+    font-size: 18px;
+}
+
+.recently-viewed-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+.recently-viewed-card {
+    display: flex;
+    flex-direction: column;
+    background: #f9fafe;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid #eef1f8;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.recently-viewed-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: #d0d7e8;
+}
+
+.recently-viewed-image {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 12px;
+    overflow: hidden;
+}
+
+.recently-viewed-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.recently-viewed-card:hover .recently-viewed-image img {
+    transform: scale(1.05);
+}
+
+.recently-viewed-image span,
+.recently-viewed-image .lazy-load-image-background {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.recently-viewed-info {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.recently-viewed-brand {
+    font-size: 11px;
+    font-weight: 600;
+    color: #16213e;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0;
+}
+
+.recently-viewed-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+    min-height: 36px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.recently-viewed-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #16213e;
+}
+
+
 @media (max-width: 1024px) {
     .home-container {
         flex-direction: column;

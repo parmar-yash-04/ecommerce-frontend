@@ -217,21 +217,34 @@ const Home = () => {
                 if (!token) return;
 
                 const response = await recentlyViewedApi.get();
-                const recentData = response.data;
+                console.log('RecentlyViewed - Raw response:', response.data);
+                
+                let recentData = response.data;
+                
+                // Handle different response formats
+                if (recentData && typeof recentData === 'object' && !Array.isArray(recentData)) {
+                    recentData = recentData.data || recentData.items || recentData.recently_viewed || [];
+                }
 
-                if (!recentData || !Array.isArray(recentData) || recentData.length === 0) return;
+                if (!Array.isArray(recentData) || recentData.length === 0) {
+                    console.log('RecentlyViewed - No data or empty array');
+                    return;
+                }
 
-                const recentProductIds = [...new Set(recentData.map(item => item.product_id))];
+                // Coerce all IDs to Number for reliable comparison
+                const recentProductIds = [...new Set(recentData.map(item => Number(item.product_id)))];
+                console.log('RecentlyViewed - Product IDs:', recentProductIds);
 
                 if (recentProductIds.length > 0) {
                     const recentProducts = allProducts
-                        .filter(p => recentProductIds.includes(p.product_id) || recentProductIds.includes(Number(p.product_id)))
+                        .filter(p => recentProductIds.includes(Number(p.product_id)))
                         .slice(0, 5);
 
+                    console.log('RecentlyViewed - Matched products:', recentProducts.length);
                     setRecentlyViewed(recentProducts);
                 }
             } catch (err) {
-                console.error('RecentlyViewed - Error:', err);
+                console.error('RecentlyViewed - Error:', err.response?.status, err.response?.data || err.message);
             }
         };
 
